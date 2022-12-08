@@ -18,11 +18,9 @@ class AddWordActivity : AppCompatActivity()
         binding = ActivityAddWordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val sp = getSharedPreferences("password", MODE_PRIVATE)
+        val pwdSP = getSharedPreferences("password", MODE_PRIVATE).getString(Telephony.Mms.Part.TEXT, "")
 
-        val pwd = sp.getString(Telephony.Mms.Part.TEXT, "")
-
-        val surePwd = if (pwd.isNullOrBlank()) "" else pwd
+        val surePwd = if (pwdSP.isNullOrBlank()) { "" } else { pwdSP }
 
         binding.btnNewWordSubmit.setOnClickListener{
             val newWord = checkedWord()
@@ -41,19 +39,22 @@ class AddWordActivity : AppCompatActivity()
             return null
         }
         val native = binding.etNative.text.toString()
+
         if (binding.etForeign.text.toString().trim() == "")
         {
             binding.etForeign.error = "This field is required!"
             return null
         }
+        val foreign = binding.etForeign.text.toString()
+
         if (binding.etLecture.text.toString().trim() == "")
         {
             binding.etLecture.error = "This field is required!"
             return null
         }
-        val foreign = binding.etForeign.text.toString()
         val lecture = parseInt(binding.etLecture.text.toString())
-        val tags = binding.etTags.toString().trim()
+
+        val tags = binding.etTags.toString().trim().filter { !it.isWhitespace() }
         return WordPair(native, foreign, lecture, tags)
     }
 }

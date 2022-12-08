@@ -27,7 +27,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Add new word"
+                android:text="@string/add_new_word"
                 android:textStyle="bold"
                 android:textSize="30sp"
                 android:textAlignment="center"
@@ -48,7 +48,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Native word *"
+                android:hint="@string/native_word"
                 android:inputType="text"/>
 
             <EditText
@@ -57,7 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="10"
-                android:hint="Foreign word *"
+                android:hint="@string/foreign_word"
                 android:inputType="text"/>
 
             <EditText

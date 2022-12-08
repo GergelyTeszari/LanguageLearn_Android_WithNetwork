@@ -20,7 +20,7 @@ class PasswordActivity : AppCompatActivity()
         binding = ActivityPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.editTextTextOldPassword.isVisible = true
+        binding.editTextTextOldPassword.isVisible = true /* it will be visible on init */
 
         val sp = getSharedPreferences("password", MODE_PRIVATE)
 
@@ -30,21 +30,22 @@ class PasswordActivity : AppCompatActivity()
         {
             binding.editTextTextOldPassword.isVisible = false
             binding.btnPwdSubmit.setOnClickListener {
-                val pwd = binding.editTextTextNewPassword.text
+                val pwd = binding.editTextTextNewPassword.text.toString()
                 val editor = sp.edit()
-                if (!pwd.equals(""))
+                if (pwd != "")
                 {
-                    editor.putString(TEXT, pwd.toString())
+                    editor.putString(TEXT, pwd)
                     editor.apply()
                     Toast.makeText(
                         this@PasswordActivity,
                         "Successful password update!",
                         Toast.LENGTH_SHORT
                     ).show()
-                    val postResult = NetworkManager.addOrModPWD("", pwd.toString())
+                    val postResult = NetworkManager.addOrModPWD("", pwd)
                     Log.d("Result of post: ", postResult.toString())
                 }
             }
+            binding.editTextTextOldPassword.isVisible = true
             updateTW(sp.getString(TEXT, ""))
         }
         else /* There is a password already */
@@ -56,19 +57,17 @@ class PasswordActivity : AppCompatActivity()
                     val newPwd = binding.editTextTextNewPassword.text.toString()
                     val editor = sp.edit()
 
+                    /* Here we allow empty String */
+
                     editor.putString(TEXT, newPwd)
-                    NetworkManager.addOrModPWD(oldPwd, newPwd)
+                    val postResult = NetworkManager.addOrModPWD(oldPwd, newPwd)
+                    Log.d("Result of post: ", postResult.toString())
                     editor.apply()
                     Toast.makeText(
                         this@PasswordActivity,
                         "Successful password update!",
                         Toast.LENGTH_SHORT
                     ).show()
-
-                    /*if (!newPwd.equals(""))
-                    {
-
-                    }*/
                 }
                 else if (oldPwd != sp.getString(TEXT, ""))
                 {

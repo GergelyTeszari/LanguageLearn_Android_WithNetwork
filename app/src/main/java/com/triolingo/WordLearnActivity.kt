@@ -32,15 +32,34 @@ class WordLearnActivity : AppCompatActivity()
         binding = ActivityWordLearnBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val sp = getSharedPreferences("isMinus", MODE_PRIVATE)
-        isMinusPoints = sp.getString(TEXT, "")!!
-
+        isMinusPoints = getSharedPreferences("isMinus", MODE_PRIVATE).getString(TEXT, "")!!
         buttonsList = mutableListOf(binding.btnN1, binding.btnN2, binding.btnN3, binding.btnN4, binding.btnN5)
         textViewsList = mutableListOf(binding.twF1, binding.twF2, binding.twF3, binding.twF4, binding.twF5)
 
         if (isMinusPoints == "false") binding.twPoints.isVisible = false
 
         getWords { dummy() }
+        feedbackOnSuccess()
+        setEnvironment()
+        refreshPointTW()
+        refreshCurrentWordTW()
+
+        binding.btnN1.setOnClickListener { buttonHandler(1) }
+        binding.btnN2.setOnClickListener { buttonHandler(2) }
+        binding.btnN3.setOnClickListener { buttonHandler(3) }
+        binding.btnN4.setOnClickListener { buttonHandler(4) }
+        binding.btnN5.setOnClickListener { buttonHandler(5) }
+        binding.btnGetNewSet.setOnClickListener {
+            localList.clear()
+            getWords { dummy() }
+            setEnvironment()
+            refreshPointTW()
+            refreshCurrentWordTW()
+        }
+    }
+
+    private fun feedbackOnSuccess()
+    {
         if (localList.isNotEmpty() && localList.size == 5)
         {
             Toast.makeText(
@@ -57,34 +76,9 @@ class WordLearnActivity : AppCompatActivity()
                 Toast.LENGTH_SHORT
             ).show()
         }
-        setEnvironment()
-        refreshPointTW()
-        currentIndex = 0
-        localList = localList.shuffled().toMutableList()
-        currentWordPair = localList[currentIndex]
-        refreshCurrentWordTW()
-
-        binding.btnN1.setOnClickListener { buttonHandler(1) }
-        binding.btnN2.setOnClickListener { buttonHandler(2) }
-        binding.btnN3.setOnClickListener { buttonHandler(3) }
-        binding.btnN4.setOnClickListener { buttonHandler(4) }
-        binding.btnN5.setOnClickListener { buttonHandler(5) }
-        binding.btnGetNewSet.setOnClickListener {
-            if (localList.isNotEmpty())
-            {
-                localList.clear()
-            }
-            getWords { dummy() }
-            setEnvironment()
-            refreshPointTW()
-            currentIndex = 0
-            localList = localList.shuffled().toMutableList()
-            currentWordPair = localList[currentIndex]
-            refreshCurrentWordTW()
-        }
     }
 
-    private fun getWords(callback: () -> Unit)
+    private fun getWords (callback: () -> Unit)
     {
         localList.clear()
         /* TODO var lecture= getSharedPreferences("Lecture", MODE_PRIVATE).getString(TEXT, "")?.toInt()
@@ -204,6 +198,10 @@ class WordLearnActivity : AppCompatActivity()
             textViewsList[localList.indexOf(iter)].text = iter.native
             textViewsList[localList.indexOf(iter)].isVisible = false
         }
+
+        currentIndex = 0
+        localList = localList.shuffled().toMutableList() /* Not to ask questions in order */
+        currentWordPair = localList[currentIndex]
     }
 
     private fun refreshPointTW()
