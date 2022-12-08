@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Triolingo</string>
+    <string name="submit">Submit</string>
+    <string name="enter_password">Enter password:</string>
+    <string name="lecture_number">Lecture number</string>
+    <string name="foreign_word">Foreign word</string>
+    <string name="native_word">Native word</string>
+    <string name="tags_separated_by_commas">Tags, separated by commas</string>
+    <string name="get_new_set">Get new set</string>
+    <string name="title_activity_temp">temp</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>
