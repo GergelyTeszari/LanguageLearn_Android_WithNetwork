@@ -8,13 +8,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.google.gson.Gson
 import com.triolingo.dataTypes.WordPair
 import com.triolingo.databinding.ActivityWordLearnBinding
 import com.triolingo.network.NetworkManager
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class WordLearnActivity : AppCompatActivity()
 {
@@ -38,11 +39,7 @@ class WordLearnActivity : AppCompatActivity()
 
         if (isMinusPoints == "false") binding.twPoints.isVisible = false
 
-        getWords { dummy() }
-        feedbackOnSuccess()
-        setEnvironment()
-        refreshPointTW()
-        refreshCurrentWordTW()
+        getWords { refreshView() }
 
         binding.btnN1.setOnClickListener { buttonHandler(1) }
         binding.btnN2.setOnClickListener { buttonHandler(2) }
@@ -50,31 +47,7 @@ class WordLearnActivity : AppCompatActivity()
         binding.btnN4.setOnClickListener { buttonHandler(4) }
         binding.btnN5.setOnClickListener { buttonHandler(5) }
         binding.btnGetNewSet.setOnClickListener {
-            localList.clear()
-            getWords { dummy() }
-            setEnvironment()
-            refreshPointTW()
-            refreshCurrentWordTW()
-        }
-    }
-
-    private fun feedbackOnSuccess()
-    {
-        if (localList.isNotEmpty() && localList.size == 5)
-        {
-            Toast.makeText(
-                this@WordLearnActivity,
-                "Continuing with list got from network...",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        if (localList.isEmpty() || localList.size != 5)
-        {
-            Toast.makeText(
-                this@WordLearnActivity,
-                "List from network is not full!",
-                Toast.LENGTH_SHORT
-            ).show()
+            getWords { refreshView() }
         }
     }
 
@@ -82,7 +55,8 @@ class WordLearnActivity : AppCompatActivity()
     {
         localList.clear()
         /* TODO var lecture= getSharedPreferences("Lecture", MODE_PRIVATE).getString(TEXT, "")?.toInt()
-        TODO var tags = getSharedPreferences("Tags", MODE_PRIVATE).getString(TEXT, "") */
+        var tags = getSharedPreferences("Tags", MODE_PRIVATE).getString(TEXT, "")
+        NetworkManager.getWordPairs(lecture, tags).enqueue(object : Callback<List<WordPair?>?> */
 
         NetworkManager.getWordPairs(null, null).enqueue(object : Callback<List<WordPair?>?>
         {
@@ -242,5 +216,30 @@ class WordLearnActivity : AppCompatActivity()
         refreshCurrentWordTW()
     }
 
-    private fun dummy(){}
+    private fun feedbackOnSuccess()
+    {
+        if (localList.isNotEmpty() && localList.size == 5)
+        {
+            Toast.makeText(
+                this@WordLearnActivity,
+                "Continuing with list got from network...",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        if (localList.isEmpty() || localList.size != 5)
+        {
+            Toast.makeText(
+                this@WordLearnActivity,
+                "List from network is not full!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun refreshView(){
+        feedbackOnSuccess()
+        setEnvironment()
+        refreshPointTW()
+        refreshCurrentWordTW()
+    }
 }

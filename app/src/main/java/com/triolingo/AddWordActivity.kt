@@ -4,9 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Telephony
 import android.util.Log
+import android.widget.Toast
 import com.triolingo.dataTypes.WordPair
 import com.triolingo.databinding.ActivityAddWordBinding
 import com.triolingo.network.NetworkManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.lang.Integer.parseInt
 
 class AddWordActivity : AppCompatActivity()
@@ -23,15 +27,47 @@ class AddWordActivity : AppCompatActivity()
         val surePwd = if (pwdSP.isNullOrBlank()) { "" } else { pwdSP }
 
         binding.btnNewWordSubmit.setOnClickListener{
-            val newWord = checkedWord()
+            val newWord = confirmPWD()
             if (newWord != null)
             {
-                val postResult = NetworkManager.addWordPair(newWord, surePwd)
-                Log.d("Result of post: ", postResult.toString())
+                NetworkManager.addWordPair(newWord, surePwd).enqueue(object : Callback<Int>
+                {
+
+                    override fun onResponse(call: Call<Int>, response: Response<Int>)
+                    {
+                        if (response.isSuccessful)
+                        {
+                            Log.d("Result of POST: ", response.toString())
+                            Toast.makeText(
+                                this@AddWordActivity,
+                                "Success!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else
+                        {
+                            Toast.makeText(
+                                this@AddWordActivity,
+                                "Error: " + response.message(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Int>, throwable: Throwable)
+                    {
+                        throwable.printStackTrace()
+                        Toast.makeText(
+                            this@AddWordActivity,
+                            "Network request error occurred, check LOG",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
             }
         }
     }
-    private fun checkedWord(): WordPair?
+    private fun confirmPWD(): WordPair?
     {
         if (binding.etNative.text.toString().trim() == "")
         {
@@ -54,7 +90,7 @@ class AddWordActivity : AppCompatActivity()
         }
         val lecture = parseInt(binding.etLecture.text.toString())
 
-        val tags = binding.etTags.toString().trim().filter { !it.isWhitespace() }
+        val tags = binding.etTags.text.toString().trim().filter { !it.isWhitespace() }
         return WordPair(native, foreign, lecture, tags)
     }
 }

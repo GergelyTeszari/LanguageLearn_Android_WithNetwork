@@ -1,10 +1,7 @@
 package com.triolingo.network
 
-import android.provider.Telephony
-import androidx.appcompat.app.AppCompatActivity
 import com.triolingo.dataTypes.WordPair
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,12 +27,12 @@ object NetworkManager
         return WordPairApi.getWordPairByName(Lecture, Tags)
     }
 
-    fun addWordPair(wordPair: WordPair, pwd: String): Response
+    fun addWordPair(wordPair: WordPair, pwd: String): Call<Int>
     {
         return WordPairApi.addWordPair(wordPair, pwd)
     }
 
-    fun addOrModPWD(oldPWD: String, newPWD: String): Response
+    fun addOrModPWD(oldPWD: String, newPWD: String): Call<Int>
     {
         return WordPairApi.createOrUpdatePWD(oldPWD, newPWD)
     }

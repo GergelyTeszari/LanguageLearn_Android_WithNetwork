@@ -8,6 +8,9 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import com.triolingo.databinding.ActivityPasswordBinding
 import com.triolingo.network.NetworkManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PasswordActivity : AppCompatActivity()
 {
@@ -41,8 +44,7 @@ class PasswordActivity : AppCompatActivity()
                         "Successful password update!",
                         Toast.LENGTH_SHORT
                     ).show()
-                    val postResult = NetworkManager.addOrModPWD("", pwd)
-                    Log.d("Result of post: ", postResult.toString())
+                    doNetworkCall("", pwd)
                 }
             }
             binding.editTextTextOldPassword.isVisible = true
@@ -60,14 +62,7 @@ class PasswordActivity : AppCompatActivity()
                     /* Here we allow empty String */
 
                     editor.putString(TEXT, newPwd)
-                    val postResult = NetworkManager.addOrModPWD(oldPwd, newPwd)
-                    Log.d("Result of post: ", postResult.toString())
-                    editor.apply()
-                    Toast.makeText(
-                        this@PasswordActivity,
-                        "Successful password update!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    doNetworkCall(oldPwd, newPwd)
                 }
                 else if (oldPwd != sp.getString(TEXT, ""))
                 {
@@ -80,6 +75,39 @@ class PasswordActivity : AppCompatActivity()
                 updateTW(sp.getString(TEXT, ""))
             }
         }
+    }
+
+    private fun doNetworkCall(oldPass: String, newPass: String)
+    {
+        NetworkManager.addOrModPWD(oldPass, newPass).enqueue(object : Callback<Int>
+        {
+
+            override fun onResponse(call: Call<Int>, response: Response<Int>)
+            {
+                if (response.isSuccessful)
+                {
+                    Log.d("Result of POST: ", response.toString())
+                }
+                else
+                {
+                    Toast.makeText(
+                        this@PasswordActivity,
+                        "Error: " + response.message(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Int>, throwable: Throwable)
+            {
+                throwable.printStackTrace()
+                Toast.makeText(
+                    this@PasswordActivity,
+                    "Network request error occurred, check LOG",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 
     private fun updateTW(redPwd: String?)
